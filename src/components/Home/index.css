@@ -1,0 +1,108 @@
+.container-main{
+    background-color: #dda15e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.container h1{
+    color:#03045e;
+    margin-top: 20px;
+    font-weight: bold;
+    
+}
+.searching{
+    display: flex;
+   
+}
+.input-button{
+    padding: 8px;
+    border: 2px  gray;
+    background-color: #14213d;
+    color: #ffe6a7;
+    border-radius: 5px;
+}
+.input{
+    margin-top: 20px;
+    height: 30px;
+    width: 400px;
+    border-color: black;
+    margin-right: 10px;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    
+}
+.buttons{
+    display: flex;
+    border-radius: 10px;
+    padding: 24px;
+}
+.buttons button{
+    padding: 10px;
+   margin-left: 10px;
+   width: 150px;
+   border-radius: 10px;
+   background-color: #4a5759;
+   color: #14213d;
+}
+.renderListContainer{
+    background-color: #fefae0;
+    height: 100%;
+}
+.renderListContainer-buttons{
+    background-color:#fefae0;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 10px;
+}
+.renderListContainer-buttons button{
+    background-color:#001524 ;
+    border: none;
+    color: #ff7d00;
+    padding: 10px;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    font-size: 20px;
+    margin-top: 10px;
+}
+.recipe-list{
+  display: grid;
+  
+  grid-template-columns: repeat(4,1fr);
+  gap: 25px; 
+  padding: 20px;
+  max-width: 1200px; 
+  margin: 0 auto;
+}
+.recipe-item{
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffffff; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+  text-align: center;
+}
+.recipe-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.recipe-item img {
+  width: 100%;
+  height: 200px; 
+  object-fit: cover; 
+  border-radius: 8px; 
+  margin-bottom: 15px;
+}
+
+
+.recipe-item h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333333;
+  font-weight: 600;
+}
