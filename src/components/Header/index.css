@@ -1,44 +1,107 @@
-.mainContainer{
-    display: flex;
-    align-items: center;
-    background-color: #283618;
-    justify-content: space-between;
-    color: #fefae0;
-    padding: 10px 50px 10px 50px;
-}
- img{
-    height:70px;
-    width: 70px;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-
-.ul{
-  list-style: none;
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  height: 80px;
+  background: rgba(18, 18, 18, 0.92);
+  backdrop-filter: blur(18px);
   display: flex;
-  gap: 24px;
-  margin-left: 40px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 70px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
 }
 
-.ul li{
-  color: #fefae0;
- 
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.link-item{
-    text-decoration: none;
+.logo-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#ff6b35,#ffb703);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 22px;
 }
 
-.search-logo{
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+.logo-section h2 {
+  color: white;
+  font-size: 24px;
+}
+
+.logo-section span {
+  color: #bbbbbb;
+  font-size: 13px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 18px;
+  border-radius: 30px;
+  transition: .3s;
+  font-weight: 600;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,.08);
+}
+
+.active {
+  background: linear-gradient(135deg,#ff6b35,#ffb703);
+  color: white;
+}
+
+.logout-btn {
+  border: none;
+  background: crimson;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 30px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 15px;
+  transition: .3s;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  background: #e60039;
+}
+
+@media (max-width:900px) {
+  .navbar {
+    padding: 20px;
+    flex-direction: column;
+    height: auto;
     gap: 20px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
-.logout{
-    padding: 10px;
-    width: 100px;
-    border: none;
-    border-radius: 10px;
-    color: rgb(210, 30, 30);
-    font-weight: bold;
-} 

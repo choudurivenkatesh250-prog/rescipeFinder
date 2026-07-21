@@ -1,92 +1,143 @@
-import Header from '../Header'
-import { useState, useEffect } from "react"
-import './index.css'
+import Header from "../Header";
+import { useState, useEffect } from "react";
+import { FaSearch, FaRandom, FaFire, FaHeart } from "react-icons/fa";
+import "./index.css";
 
 const Home = () => {
+  const [searchList, setSearchList] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
-    const [searchList, setSearchList] = useState([])
-    const [searchInput, setSearchInput] = useState("")
+  const fetchRecipes = async (url) => {
+    const response = await fetch(url);
+    const data = await response.json();
+    setSearchList(data.meals || []);
+  };
 
-    useEffect(() => {
-     const fetchData = async ()=> {
-     const response =  await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken");
-     const data = await response.json()
-     console.log(data.meals)
-     setSearchList(data.meals)
+  useEffect(() => {
+    fetchRecipes(
+      "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken"
+    );
+  }, []);
 
-        }
-        fetchData()
-    },[])
-       
-       const inputSearch = (event) => {
-        setSearchInput(event.target.value)
+  const surpriseMeal = () => {
+    fetchRecipes("https://www.themealdb.com/api/json/v1/1/random.php");
+  };
 
-       }
-       const searchResult =searchList.filter((eachItem)=> eachItem.strMeal.toLowerCase().includes(searchInput.toLowerCase()))
-      const forSurpriseFood = async ()  => {
-        const response = await fetch("https://www.themealdb.com/api/json/v1/1/random.php")
-        const  data = await response.json()
-        setSearchList(data.meals)
+  const searchResult = searchList.filter((item) =>
+    item.strMeal.toLowerCase().includes(searchInput.toLowerCase())
+  );
 
-      }
+  const categories = [
+    {
+      name: "Indian",
+      url: "https://www.themealdb.com/api/json/v1/1/filter.php?a=Indian",
+    },
+    {
+      name: "Canadian",
+      url: "https://www.themealdb.com/api/json/v1/1/filter.php?a=Canadian",
+    },
+    {
+      name: "Chicken",
+      url: "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken",
+    },
+    {
+      name: "Sea Food",
+      url: "https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood",
+    },
+  ];
 
-     const forIndianFood = async () => {
-        const response = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Indian");
-        const data = await response.json()
-        console.log(data.meals)
-        setSearchList(data.meals)
-     } 
-     const forCanadianFood = async () => {
-        const response  = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?a=Canadian");
-        const data = await response.json()
-        setSearchList(data.meals)
-       
-     }
-     const forChickenFood = async () => {
-        const response = await fetch("https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken")
-        const data = await response.json()
-        setSearchList(data.meals)
-     } 
-     const forSeaFood = async () => {
-        const response = await fetch ("https://www.themealdb.com/api/json/v1/1/filter.php?i=chicken_breast")
-      const data = await response.json()
-      setSearchList(data.meals)
-    }
+  return (
+    <>
+      <Header />
 
-    return (
-        <>
-            <Header />
-            <div className='container-main'>
-                <h1>Recipe Finder</h1>
-                <div className='seacrhing'>
-                    <input type='search' className='input' placeholder='Search recepies by name...' onChange={inputSearch} value={searchInput}/>
-                    <button className='input-button' onClick={forSurpriseFood}>Surprise Me</button>
-                </div>
+      <section className="hero-section">
+        <div className="hero-overlay">
+          <div className="hero-content">
+            <span className="hero-badge">
+              <FaFire />
+              Trending Recipes
+            </span>
 
-            </div>
-            <div className='renderListContainer'>
-                <div className='renderListContainer-buttons'>
-                   
-                     <button onClick={forIndianFood}>Indian</button>
-                      <button onClick={forCanadianFood}>Canadian</button>
-                      <button onClick={forChickenFood}>Chicken</button>
-                       <button onClick={forSeaFood}>Japaneese</button>
-                </div>
-                <div className='recipe-list'>
-                    {searchResult.map((eachitem)=>{
-                        return (
-                            <>
-                            <div className='recipe-item' key={eachitem.idMeal}>
-                                <img src={eachitem.strMealThumb} alt='{eachitem.strMeal}'/>
-                                 <h3>{eachitem.strMeal}</h3>
-                            </div>
-                            </>
-                        )
-                    })}
-                </div>
+            <h1>
+              Discover Your
+              <br />
+              <span>Favorite Recipe</span>
+            </h1>
+
+            <p>
+              Explore thousands of delicious meals from around the world.
+              Search instantly and cook something amazing today.
+            </p>
+
+            <div className="search-box">
+              <FaSearch className="search-icon" />
+
+              <input
+                type="search"
+                placeholder="Search recipes..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+
+              <button onClick={surpriseMeal}>
+                <FaRandom />
+                Surprise Me
+              </button>
             </div>
 
-        </>
-    )
-}
-export default Home
+            <div className="category-chips">
+              {categories.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => fetchRecipes(item.url)}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="recipes-section">
+        <div className="section-title">
+          <h2>Popular Recipes</h2>
+          <p>{searchResult.length} Recipes Found</p>
+        </div>
+
+        <div className="recipe-grid">
+          {searchResult.map((meal) => (
+            <div className="recipe-card" key={meal.idMeal}>
+              <div className="image-wrapper">
+                <img
+                  src={meal.strMealThumb}
+                  alt={meal.strMeal}
+                />
+
+                <button className="fav-btn">
+                  <FaHeart />
+                </button>
+                                <span className="rating">⭐ 4.8</span>
+              </div>
+
+              <div className="recipe-info">
+                <h3>{meal.strMeal}</h3>
+
+                <div className="recipe-meta">
+                  <span>⏱ 30 mins</span>
+                  <span>🍽 Easy</span>
+                </div>
+
+                <button className="view-btn">
+                  View Recipe →
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+};
+
+export default Home;

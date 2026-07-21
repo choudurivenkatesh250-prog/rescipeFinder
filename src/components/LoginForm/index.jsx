@@ -1,102 +1,130 @@
-import { useState } from "react"
-import "./index.css"
-import { useNavigate } from "react-router"
+import { useState, useEffect } from "react";
+import "./index.css";
+import { useNavigate } from "react-router";
+import Cookies from "js-cookie";
 
 const LoginForm = () => {
-    const [showForm, setShowForm] = useState(true)
-    const [userName, setUserName] = useState("")
-    const [password, setPassword] = useState("")
-    const navigate = useNavigate()
+  const [showForm, setShowForm] = useState(true);
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
 
-  
-    const handleSignup = () => {
-        if (!userName || !password) {
-            alert("Please fill all fields")
-            return
-        }
+  const navigate = useNavigate();
 
-        const user = {
-            username: userName,
-            password: password
-        }
+  useEffect(() => {
+    const token = Cookies.get("jwt_token");
 
-        localStorage.setItem("user", JSON.stringify(user))
-        alert("Signup successful")
+    if (token) {
+      navigate("/home");
+    }
+  }, [navigate]);
 
-        setUserName("")
-        setPassword("")
-        setShowForm(true)
+  const handleSignup = () => {
+    if (!userName || !password) {
+      alert("Please fill all fields");
+      return;
     }
 
-    
-    const handleSignin = () => {
-        const storedUser = JSON.parse(localStorage.getItem("user"))
+    const user = {
+      username: userName,
+      password: password,
+    };
 
-        if (!storedUser) {
-            alert("No user found, please signup first")
-            return
-        }
+    localStorage.setItem("user", JSON.stringify(user));
 
-        if (
-            userName === storedUser.username &&
-            password === storedUser.password
-        ) {
-            localStorage.setItem("isLoggedIn", "true")
-            navigate("/home")
-        } else {
-            alert("Invalid credentials")
-        }
+    alert("Signup Successful");
 
-        setUserName("")
-        setPassword("")
+    setUserName("");
+    setPassword("");
+    setShowForm(true);
+  };
+
+  const handleSignin = () => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!storedUser) {
+      alert("Please signup first");
+      return;
     }
 
-    return (
-        <div className="container">
+    if (
+      userName === storedUser.username &&
+      password === storedUser.password
+    ) {
+      Cookies.set("jwt_token", "recipefinder123", {
+        expires: 7,
+      });
 
-  <div className="toggle-buttons">
-    <button className="toggle-btn" onClick={() => setShowForm(false)}>
-      Signup
-    </button>
-    <button className="toggle-btn" onClick={() => setShowForm(true)}>
-      Signin
-    </button>
-  </div>
+      navigate("/home");
+    } else {
+      alert("Invalid Credentials");
+    }
+  };
 
-  <div className="form-card">
-    <h2 className="form-title">
-      {showForm ? "Sign In" : "Sign Up"}
-    </h2>
+  return (
+    <div className="container">
+      <div className="toggle-buttons">
+        <button
+          className="toggle-btn"
+          onClick={() => setShowForm(false)}
+        >
+          Signup
+        </button>
 
-    <input
-      className="input-field"
-      type="text"
-      placeholder={showForm ? "Enter Username" : "Create Username"}
-      value={userName}
-      onChange={(e) => setUserName(e.target.value)}
-    />
+        <button
+          className="toggle-btn"
+          onClick={() => setShowForm(true)}
+        >
+          Signin
+        </button>
+      </div>
 
-    <input
-      className="input-field"
-      type="password"
-      placeholder={showForm ? "Enter Password" : "Create Password"}
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
+      <div className="form-card">
+        <h2 className="form-title">
+          {showForm ? "Sign In" : "Sign Up"}
+        </h2>
 
-    {showForm ? (
-      <button className="submit-btn" onClick={handleSignin}>
-        Login
-      </button>
-    ) : (
-      <button className="submit-btn" onClick={handleSignup}>
-        Register
-      </button>
-    )}
-  </div>
+        <input
+          className="input-field"
+          type="text"
+          placeholder={
+            showForm
+              ? "Enter Username"
+              : "Create Username"
+          }
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+        />
 
-</div>
-    )
-}
+        <input
+          className="input-field"
+          type="password"
+          placeholder={
+            showForm
+              ? "Enter Password"
+              : "Create Password"
+          }
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-export default LoginForm
+        {showForm ? (
+          <button
+            className="submit-btn"
+            onClick={handleSignin}
+          >
+            Login
+          </button>
+        ) : (
+          <button
+            className="submit-btn"
+            onClick={handleSignup}
+          >
+            Register
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default LoginForm;

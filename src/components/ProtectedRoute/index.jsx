@@ -1,9 +1,14 @@
-import { Navigate } from "react-router"
+import { Navigate } from "react-router";
+import Cookies from "js-cookie";
 
 const ProtectedRoute = ({ children }) => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn")
+  const token = Cookies.get("jwt_token");
 
-  return isLoggedIn === "true" ? children : <Navigate to="/" />
-}
+  if (token === undefined) {
+    return <Navigate to="/" replace />;
+  }
 
-export default ProtectedRoute
+  return children;
+};
+
+export default ProtectedRoute;

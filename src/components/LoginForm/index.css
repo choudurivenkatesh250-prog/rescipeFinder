@@ -1,4 +1,4 @@
-/* Full page center */
+
 .container {
   height: 100vh;
   display: flex;
@@ -9,7 +9,7 @@
   font-family: Arial, sans-serif;
 }
 
-/* Toggle buttons (Signin / Signup) */
+
 .toggle-buttons {
   margin-bottom: 20px;
 }
