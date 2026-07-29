@@ -12,7 +12,6 @@ const LoginForm = () => {
 
   useEffect(() => {
     const token = Cookies.get("jwt_token");
-
     if (token) {
       navigate("/home");
     }
@@ -30,7 +29,6 @@ const LoginForm = () => {
     };
 
     localStorage.setItem("user", JSON.stringify(user));
-
     alert("Signup Successful");
 
     setUserName("");
@@ -53,7 +51,6 @@ const LoginForm = () => {
       Cookies.set("jwt_token", "recipefinder123", {
         expires: 7,
       });
-
       navigate("/home");
     } else {
       alert("Invalid Credentials");
@@ -61,67 +58,63 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="container">
-      <div className="toggle-buttons">
-        <button
-          className="toggle-btn"
-          onClick={() => setShowForm(false)}
-        >
-          Signup
-        </button>
+    <div className="login-wrapper">
+      <div className="login-card">
+        
+        {/* Brand Header */}
+        <div className="brand-header">
+          <h1>RecipeFinder</h1>
+          <p>Discover & cook amazing food</p>
+        </div>
 
-        <button
-          className="toggle-btn"
-          onClick={() => setShowForm(true)}
-        >
-          Signin
-        </button>
-      </div>
-
-      <div className="form-card">
-        <h2 className="form-title">
-          {showForm ? "Sign In" : "Sign Up"}
-        </h2>
-
-        <input
-          className="input-field"
-          type="text"
-          placeholder={
-            showForm
-              ? "Enter Username"
-              : "Create Username"
-          }
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-
-        <input
-          className="input-field"
-          type="password"
-          placeholder={
-            showForm
-              ? "Enter Password"
-              : "Create Password"
-          }
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {showForm ? (
+        {/* Integrated Tabs */}
+        <div className="tab-container">
           <button
-            className="submit-btn"
-            onClick={handleSignin}
+            className={`tab-btn ${showForm ? "active" : ""}`}
+            onClick={() => setShowForm(true)}
           >
-            Login
+            Log In
           </button>
-        ) : (
           <button
-            className="submit-btn"
-            onClick={handleSignup}
+            className={`tab-btn ${!showForm ? "active" : ""}`}
+            onClick={() => setShowForm(false)}
           >
-            Register
+            Sign Up
           </button>
-        )}
+        </div>
+
+        {/* Form Content */}
+        <div className="form-content">
+          <div className="input-group">
+            <label>Username</label>
+            <input
+              className="input-field"
+              type="text"
+              placeholder={showForm ? "Enter your username" : "Create a username"}
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Password</label>
+            <input
+              className="input-field"
+              type="password"
+              placeholder={showForm ? "Enter your password" : "Create a password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            className="primary-btn"
+            onClick={showForm ? handleSignin : handleSignup}
+          >
+            {showForm ? "Login to your account" : "Create Account"}
+          </button>
+        </div>
+
       </div>
     </div>
   );
