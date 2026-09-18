@@ -1,50 +1,157 @@
 import Header from "../Header";
-import { useState, useEffect } from "react";
-import { FaSearch, FaRandom, FaFire, FaHeart } from "react-icons/fa";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
+import {
+  FaSearch,
+  FaRandom,
+  FaFire,
+  FaHeart,
+  FaRegHeart,
+  FaUtensils,
+  FaGlobeAmericas,
+} from "react-icons/fa";
+import {
+  ApiError,
+  filterMealsByArea,
+  filterMealsByCategory,
+  getRandomMeal,
+  searchMealsByName,
+} from "../../services/mealdb";
+import {
+  FAVORITES_EVENT,
+  readFavorites,
+  toggleFavorite,
+} from "../../services/favorites";
 import "./index.css";
+
+const DEFAULT_SOURCE = {
+  type: "category",
+  value: "Chicken",
+  label: "Popular Recipes",
+};
+
+const categories = [
+  { name: "Indian", type: "area", value: "Indian" },
+  { name: "Canadian", type: "area", value: "Canadian" },
+  { name: "Chicken", type: "category", value: "Chicken" },
+  { name: "Sea Food", type: "category", value: "Seafood" },
+];
 
 const Home = () => {
   const [searchList, setSearchList] = useState([]);
   const [searchInput, setSearchInput] = useState("");
+  const [status, setStatus] = useState("loading");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [sectionLabel, setSectionLabel] = useState(DEFAULT_SOURCE.label);
+  const [retryKey, setRetryKey] = useState(0);
+  const [favorites, setFavorites] = useState(() => readFavorites());
 
-  const fetchRecipes = async (url) => {
-    const response = await fetch(url);
-    const data = await response.json();
-    setSearchList(data.meals || []);
-  };
+  const requestIdRef = useRef(0);
+  const activeSourceRef = useRef(DEFAULT_SOURCE);
+  const baseSourceRef = useRef(DEFAULT_SOURCE);
+
+  const loadMeals = useCallback(async (source) => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    activeSourceRef.current = source;
+
+    setStatus("loading");
+    setErrorMessage("");
+    setSectionLabel(source.label ?? "Recipes");
+
+    try {
+      let meals = [];
+
+      if (source.type === "search") {
+        meals = await searchMealsByName(source.value);
+      } else if (source.type === "area") {
+        meals = await filterMealsByArea(source.value);
+      } else if (source.type === "random") {
+        meals = await getRandomMeal();
+      } else {
+        meals = await filterMealsByCategory(source.value);
+      }
+
+      // Ignore responses that arrive after a newer request was started.
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      setSearchList(meals);
+      setStatus("ready");
+    } catch (error) {
+      if (requestId !== requestIdRef.current) {
+        return;
+      }
+
+      setSearchList([]);
+      setErrorMessage(
+        error instanceof ApiError
+          ? error.message
+          : "Something went wrong while loading recipes. Please try again."
+      );
+      setStatus("error");
+    }
+  }, []);
 
   useEffect(() => {
-    fetchRecipes(
-      "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken"
-    );
+    loadMeals(activeSourceRef.current);
+  }, [loadMeals, retryKey]);
+
+  // Debounced full-catalogue search so the hero search really searches every
+  // recipe instead of only the list that happens to be loaded.
+  useEffect(() => {
+    const term = searchInput.trim();
+
+    if (!term) {
+      if (activeSourceRef.current.type === "search") {
+        loadMeals(baseSourceRef.current);
+      }
+
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      loadMeals({
+        type: "search",
+        value: term,
+        label: `Search results for "${term}"`,
+      });
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [searchInput, loadMeals]);
+
+  useEffect(() => {
+    const sync = () => setFavorites(readFavorites());
+
+    window.addEventListener(FAVORITES_EVENT, sync);
+
+    return () => window.removeEventListener(FAVORITES_EVENT, sync);
   }, []);
 
   const surpriseMeal = () => {
-    fetchRecipes("https://www.themealdb.com/api/json/v1/1/random.php");
+    setSearchInput("");
+    loadMeals({ type: "random", value: "", label: "Surprise Recipe" });
   };
 
-  const searchResult = searchList.filter((item) =>
-    item.strMeal.toLowerCase().includes(searchInput.toLowerCase())
-  );
+  const selectCategory = (category) => {
+    baseSourceRef.current = {
+      type: category.type,
+      value: category.value,
+      label: `${category.name} Recipes`,
+    };
+    setSearchInput("");
+    loadMeals(baseSourceRef.current);
+  };
 
-  const categories = [
-    {
-      name: "Indian",
-      url: "https://www.themealdb.com/api/json/v1/1/filter.php?a=Indian",
-    },
-    {
-      name: "Canadian",
-      url: "https://www.themealdb.com/api/json/v1/1/filter.php?a=Canadian",
-    },
-    {
-      name: "Chicken",
-      url: "https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken",
-    },
-    {
-      name: "Sea Food",
-      url: "https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood",
-    },
-  ];
+  const favoriteIds = new Set(favorites.map((item) => item.id));
+
+  const term = searchInput.trim().toLowerCase();
+
+  const searchResult = term
+    ? searchList.filter((item) => item.name.toLowerCase().includes(term))
+    : searchList;
 
   return (
     <>
@@ -89,7 +196,7 @@ const Home = () => {
               {categories.map((item) => (
                 <button
                   key={item.name}
-                  onClick={() => fetchRecipes(item.url)}
+                  onClick={() => selectCategory(item)}
                 >
                   {item.name}
                 </button>
@@ -101,39 +208,90 @@ const Home = () => {
 
       <section className="recipes-section">
         <div className="section-title">
-          <h2>Popular Recipes</h2>
-          <p>{searchResult.length} Recipes Found</p>
+          <h2>{sectionLabel}</h2>
+          <p>
+            {status === "loading"
+              ? "Loading recipes..."
+              : `${searchResult.length} Recipes Found`}
+          </p>
         </div>
 
+        {status === "error" ? (
+          <div className="recipes-status">
+            <h3>We could not load recipes</h3>
+            <p>{errorMessage}</p>
+            <button
+              type="button"
+              className="view-btn"
+              onClick={() => setRetryKey((value) => value + 1)}
+            >
+              Try Again
+            </button>
+          </div>
+        ) : null}
+
+        {status === "ready" && searchResult.length === 0 ? (
+          <div className="recipes-status">
+            <h3>No recipes found</h3>
+            <p>
+              We could not find any recipe matching your search. Try a different
+              keyword or pick one of the categories above.
+            </p>
+          </div>
+        ) : null}
+
         <div className="recipe-grid">
-          {searchResult.map((meal) => (
-            <div className="recipe-card" key={meal.idMeal}>
-              <div className="image-wrapper">
-                <img
-                  src={meal.strMealThumb}
-                  alt={meal.strMeal}
-                />
+          {searchResult.map((meal) => {
+            const isFav = favoriteIds.has(meal.id);
 
-                <button className="fav-btn">
-                  <FaHeart />
-                </button>
-                                <span className="rating">⭐ 4.8</span>
-              </div>
+            return (
+              <div className="recipe-card" key={meal.id}>
+                <div className="image-wrapper">
+                  <img
+                    src={meal.thumbnail}
+                    alt={meal.name}
+                    loading="lazy"
+                  />
 
-              <div className="recipe-info">
-                <h3>{meal.strMeal}</h3>
+                  <button
+                    type="button"
+                    className={`fav-btn ${isFav ? "fav-btn-active" : ""}`}
+                    onClick={() => toggleFavorite(meal)}
+                    aria-pressed={isFav}
+                    title={
+                      isFav ? "Remove from cookbook" : "Save to cookbook"
+                    }
+                  >
+                    {isFav ? <FaHeart /> : <FaRegHeart />}
+                  </button>
 
-                <div className="recipe-meta">
-                  <span>⏱ 30 mins</span>
-                  <span>🍽 Easy</span>
+                  <span className="rating">{meal.category || "Recipe"}</span>
                 </div>
 
-                <button className="view-btn">
-                  View Recipe →
-                </button>
+                <div className="recipe-info">
+                  <h3>{meal.name}</h3>
+
+                  <div className="recipe-meta">
+                    <span>
+                      <FaUtensils />
+                      {meal.category || "Recipe"}
+                    </span>
+
+                    {meal.area || meal.country ? (
+                      <span>
+                        <FaGlobeAmericas />
+                        {meal.area || meal.country}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <Link className="view-btn" to={`/recipe/${meal.id}`}>
+                    View Recipe →
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </>

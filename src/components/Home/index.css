@@ -280,11 +280,23 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   color: #cbd5e1;
   font-size: 17px;
 }
 
+.recipe-meta span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recipe-meta span svg {
+  color: #ffb703;
+}
+
 .view-btn {
+  display: block;
   width: 100%;
   border: none;
   border-radius: 14px;
@@ -293,8 +305,49 @@ body {
   padding: 18px;
   font-size: 18px;
   font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
   cursor: pointer;
   transition: .35s;
+}
+
+.fav-btn-active {
+  background: crimson;
+  color: white;
+}
+
+/* ===========================
+      STATUS / EMPTY STATE
+=========================== */
+
+.recipes-status {
+  max-width: 620px;
+  margin: 0 auto 40px;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  padding: 34px;
+  text-align: center;
+}
+
+.recipes-status h3 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.recipes-status p {
+  color: #94a3b8;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.recipes-status .view-btn {
+  max-width: 240px;
+  margin: 24px auto 0;
+  padding: 15px;
+  font-size: 16px;
 }
 
 .view-btn:hover {

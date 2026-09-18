@@ -1,0 +1,152 @@
+/* ===========================
+        COOKBOOK PAGE
+   (reuses the shared recipe-card /
+    recipe-grid / view-btn styles)
+=========================== */
+
+.cookbook-page {
+  min-height: 100vh;
+  background: #0f172a;
+}
+
+.cookbook-hero {
+  padding: 70px 8% 0;
+  text-align: center;
+}
+
+.cookbook-hero h1 {
+  font-size: 56px;
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.cookbook-hero h1 span {
+  color: #ffb703;
+}
+
+.cookbook-hero p {
+  color: #cbd5e1;
+  font-size: 18px;
+  max-width: 620px;
+  margin: auto;
+  line-height: 1.8;
+}
+
+.cookbook-count {
+  margin-top: 14px;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.cookbook-recipes {
+  padding: 60px 8% 80px;
+}
+
+/* ===========================
+        EMPTY STATE
+=========================== */
+
+.cookbook-empty {
+  max-width: 700px;
+  margin: 60px auto 90px;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  padding: 55px 40px;
+  text-align: center;
+  box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35);
+}
+
+.cookbook-empty-icon {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: #ffb703;
+  background: rgba(255, 183, 3, 0.12);
+  border: 1px solid rgba(255, 183, 3, 0.3);
+}
+
+.cookbook-empty h2 {
+  color: #ffffff;
+  font-size: 30px;
+  margin-bottom: 14px;
+}
+
+.cookbook-empty p {
+  color: #94a3b8;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.cookbook-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.cookbook-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 28px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ff6b35, #ffb703);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: 0.35s;
+}
+
+.cookbook-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(255, 107, 53, 0.35);
+}
+
+.cookbook-btn-ghost {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cookbook-btn-ghost:hover {
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ===========================
+        RESPONSIVE
+=========================== */
+
+@media (max-width: 768px) {
+  .cookbook-hero {
+    padding: 45px 5% 0;
+  }
+
+  .cookbook-hero h1 {
+    font-size: 38px;
+  }
+
+  .cookbook-recipes {
+    padding: 45px 5% 60px;
+  }
+
+  .cookbook-empty {
+    padding: 38px 22px;
+    margin: 40px 5% 70px;
+  }
+
+  .cookbook-empty h2 {
+    font-size: 24px;
+  }
+
+  .cookbook-btn {
+    flex: 1 1 100%;
+  }
+}

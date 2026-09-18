@@ -45,7 +45,8 @@ const Header = () => {
                 <Link
                     to="/browse"
                     className={
-                        location.pathname === "/browse"
+                        location.pathname === "/browse" ||
+                        location.pathname.startsWith("/recipe/")
                             ? "nav-item active"
                             : "nav-item"
                     }
